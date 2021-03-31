@@ -1,0 +1,59 @@
+
+app:
+  name: flask-app
+  deployment:
+    name: flask-deployment
+    replicas: 3
+    container:
+      image: flask-api:v3
+      port: 5000
+  service:
+    name: flask-service
+    type: LoadBalancer
+    port: 5000
+  ingress:
+    name: flask-ingress
+    path: /
+
+
+mysql:
+  name: mysql-db
+  deployment:
+    name: mysql-deployment
+    replicas: 1
+    container:
+      image: mysql
+      port: 3306
+  service:
+    name: mysql-service
+    type: LoadBalancer
+    port: 3306
+  volume:
+    pv:
+      name: mysql-pv
+    pvc:
+      name: mysql-pvc
+    type: local
+    storageClassName: standard
+    hostPath: /mnt/data
+    mountPath: /var/lib/mysql
+    accessModes: ReadWriteOnce
+    storage: 2Gi
+  secret:
+    name: mysql-secrets
+    data:
+      key: db_root_password
+      name: DB_ROOT_PASSWORD
+      value: dGVzdA==
+  env:
+    - key: MYSQL_SERVICE_HOST
+      value: "mysql-service"  # nom de service ou bien @ip de endpoint of the mysql service (ip adress change if the pod get down)
+    - key: MYSQL_SERVICE_PORT
+      value : 3306
+    - key: db_name
+      value: "flaskapi"
+    - key: db_root_password
+      value: "test"
+
+
+      # password = test    ||  echo -n <super-secret-passwod> | base64
