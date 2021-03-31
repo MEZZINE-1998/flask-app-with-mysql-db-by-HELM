@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.mysql.service.name }} #mysql
+  labels:
+    app: {{ .Values.mysql.name }} #db
+spec:
+  ports:
+  - port: {{ .Values.mysql.service.port }} #3306
+    protocol: TCP
+  selector:
+    app: {{ .Values.mysql.name }} #db
+  type: {{ .Values.mysql.service.type }} #LoadBalancer
